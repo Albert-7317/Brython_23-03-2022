@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="filesaver.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <input type='file' accept='text/plain' onchange='openFile(event)'><br>
+    <script>
+        var openFile = function(event) {
+        var input = event.target;
+        
+        var reader = new FileReader();
+        reader.onload = function(){
+            var text = reader.result;
+            console.log(reader.result.substring(0, 200));
+            localStorage.setItem('brython-runner-dev-code', reader.result);
+			location.href='http://192.168.1.7/brython-runner/index.html'
+        };
+        reader.readAsText(input.files[0]);
+        };
+    </script>
+</body>
+</html>

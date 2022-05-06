@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="filesaver.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <form action="save.php"  method='post'>
+        Filename: <input type="text" id="filename" name="filename"><br>
+        File will be saved as a .py so it can be uploaded later <br>
+        <input type="submit" onclick=save()>
+		<input type="hidden" id="code" name="code"><br>
+    </form>
+    <script>
+        function save(){
+            const name = document.getElementById("filename").value;
+            let name_format = name + '.py';
+            var code_snippet = sessionStorage.getItem("code_Snippet");
+            let blob = new Blob([code_snippet],
+                {type: "text/plain;charset=utf-8"});
+            saveAs(blob, name_format);
+			document.getElementById("code").value = code_snippet;
+        }
+    </script>
+</body>
+</html>

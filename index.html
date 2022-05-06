@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brython Runner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/theme/ayu-mirage.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/python/python.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/addon/comment/comment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/keymap/sublime.js"></script>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script src="./lib/brython-runner.bundle.js"></script>
+        <script src="filesaver.js"></script>
+    <script src="brython.js"></script>
+    <script src="brython_stdlib.js"></script>
+</head>
+<body>
+        <div class="dev-box">
+            <div class="lesson">
+                <p>
+                    this is were the code for the lesson will go
+                </p>
+                        <a href="http://192.168.1.7/index.html">Logout</a> <br>
+            </div>
+            <div class="toolbar-row">
+                <button class="toolbar-button" onclick="run()">
+                    Run
+                </button>
+                <button class="toolbar-button", onclick="clearOutput()">
+                    Clear
+                </button>
+                <button class="toolbar-button", onclick="save()">
+                    Save
+                </button>
+                <button class="toolbar-button", onclick="upload()">
+                    Upload
+                </button>
+            </div>
+            <div class="workspace-row">
+                <div class="editor-column">
+                    <div class="editor" id="editor"></div>
+                </div>
+                <div class="run-column">
+                    <div class="output-box" id="output">
+
+                    </div>
+                </div>
+            </div
+        </div>
+        <script>
+            //import { saveAs } from 'file-saver';
+            // Initialize the code editor.
+            const CODEMIRROR_OPTIONS = {
+                lineNumbers: false,
+                lineSeparator: '\n',
+                mode: undefined,
+                theme: 'ayu-mirage',
+                fontSize: 14,
+                indentUnit: 4,
+                tabSize: 4,
+                indentWithTabs: true,
+                lineWrapping: true,
+                readOnly: false,
+                smartIndent: true,
+				matchBrackets: true,
+                autoCloseBrackets: true,
+                showTrailingSpace: true,
+                keyMap: 'sublime',
+                extraKeys: null,
+                showInvisibles: false,
+                viewportMargin: 10,
+            }
+            const codeStoreKey = 'brython-runner-dev-code'
+            const loadedCode = localStorage.getItem(codeStoreKey)
+            const code = loadedCode || 'print("hello world")'
+            const editor = CodeMirror(document.getElementById('editor'), {
+                ...CODEMIRROR_OPTIONS,
+                mode: 'python',
+                value: code,
+            })
+            editor.on('change', (editor, change) => {
+                localStorage.setItem(codeStoreKey, editor.getDoc().getValue());
+            })
+            const runner = new BrythonRunner({
+                stdout: {
+                    write(content) {
+                        var el = document.createElement('code');
+                        var text = document.createTextNode(content);
+                        el.appendChild(text);
+                        document.getElementById('output').appendChild(el)  ;
+                    },
+                    flush() { }
+                },
+                stderr: {
+                    write(content) {
+                        var el = document.createElement('code');
+                        var text = document.createTextNode(content);
+                        el.appendChild(text);
+						el.setAttribute('class', 'error');
+                        document.getElementById('output').appendChild(el);
+                    },
+                    flush() { }
+                },
+                stdin: {
+                    async readline() {
+                        var data = prompt();
+                        var el = document.createElement('code');
+                        var text = document.createTextNode(data + '\n');
+                        el.appendChild(text);
+                        document.getElementById('output').appendChild(el)  ;
+
+                        return data
+                    },
+                }
+            })
+            function clearOutput() {
+                document.getElementById('output').innerHTML = ''
+            }
+            function getCode() {
+                return editor.getDoc().getValue();
+            }
+            function run() {
+                clearOutput();
+                const code = getCode();
+                runner.runCode(code);
+            }
+            function save() {
+                let code_snippet = getCode();
+				var file = prompt("Enter file name: ");
+            	let blob = new Blob([code_snippet],
+                	{type: "text/plain;charset=utf-8"});
+            	saveAs(blob, file);
+            }
+            function upload() {
+				location.href='http://192.168.1.7/brython-runner/upload.html';
+            }
+        </script>
+    </div>
+    <div class="comments">
+        <p>
+            this is were the comments will go
+        </p>
+    </div>
+    <script>
+        console.log('loaded correctly')
+    </script>
+</body>
+</html>

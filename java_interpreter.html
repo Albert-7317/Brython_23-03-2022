@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="filesaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/theme/ayu-mirage.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/keymap/sublime.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" type="text/css" href="java.css">
+    <title>JS Games</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        canvas { background: lightblue; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="dev">
+        <div class="tool-bar">
+            <button onclick=run() class="toolbar-button">Run
+            <button onclick=clearOutput() class="toolbar-button">Clear
+            <button onclick=save() class="toolbar-button">Save
+            <button onclick=upload() class="toolbar-button">upload
+        </div>
+        <br>
+        <div class="editor-console">
+            <div class="editor-col">
+                <textarea id="code" rows="20" cols="100" class="editor"></textarea>
+            </div>
+            <div class="canvas=col">
+                <canvas id="myCanvas" width="480" height="320" class="canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+        let loadedCode = localStorage.getItem('java_code');
+
+         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            styleActiveLine: true,
+            lineNumbers: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            smartIndent: true,
+            theme: 'ayu-mirage',
+            mode: 'javascript',
+            value: 'loadedCode',
+            keyMap: 'sublime'
+        });
+
+        editor.setValue(loadedCode);
+
+        function run(){
+            let code = editor.getValue();
+            eval(code);
+            localStorage.setItem('java_code', code);
+        }
+        function clearOutput(){
+            editor.setValue('');
+        }
+        function save(){
+            code_snippet = editor.getValue();
+            var file = prompt("Enter file name: ");
+            let blob = new Blob([code_snippet],
+                {type: "text/plain;charset=utf-8"});
+            saveAs(blob, file);
+            
+        }
+        function upload(){
+            location.href='upload_java.html';
+            let user_code = localStorage.getItem('java_code');
+            editor.setValue(user_code);
+        }
+    </script>
+</body>
+</html>
